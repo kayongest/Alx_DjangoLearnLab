@@ -19,8 +19,9 @@ def get_books_in_library(library_name):
 def get_librarian_for_library(library_name):
     """Retrieve the librarian for a library using the exact required pattern"""
     try:
-        return Librarian.objects.get(library__name=library_name)  # Exact pattern required
-    except Librarian.DoesNotExist:
+        library = Library.objects.get(name=library_name)
+        return Librarian.objects.get(library=library)  # Exact pattern required
+    except (Library.DoesNotExist, Librarian.DoesNotExist):
         return None
 
 def create_sample_data():
@@ -55,22 +56,20 @@ def demonstrate_queries():
     """Demonstrate all query functions"""
     create_sample_data()
     
-    # Test book by author query
     print("\nBooks by J.K. Rowling:")
     for book in get_books_by_author("J.K. Rowling"):
         print(f"- {book.title}")
     
-    # Test books in library query
     print("\nBooks in Central Library:")
     for book in get_books_in_library("Central Library"):
         print(f"- {book.title}")
     
-    # Test librarian query (using the exact required pattern)
     print("\nLibrarian for Central Library (using exact pattern):")
     try:
-        librarian = Librarian.objects.get(library__name="Central Library")
+        library = Library.objects.get(name="Central Library")
+        librarian = Librarian.objects.get(library=library)  # Exact pattern
         print(librarian.name)
-    except Librarian.DoesNotExist:
+    except (Library.DoesNotExist, Librarian.DoesNotExist):
         print("No librarian found")
 
 if __name__ == "__main__":
